@@ -1,0 +1,27 @@
+[0.011s] Invoking command in '/home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --build /home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector -- -j16 -l16
+[0.041s] [35m[1mScanning dependencies of target aruco_gate_detector_node[0m
+[0.078s] [ 66%] [32mBuilding CXX object CMakeFiles/aruco_gate_detector_node.dir/src/aruco_gate_detector.cpp.o[0m
+[0.078s] [ 66%] [32mBuilding CXX object CMakeFiles/aruco_gate_detector_node.dir/src/aruco_gate_detector_node.cpp.o[0m
+[4.460s] [100%] [32m[1mLinking CXX executable aruco_gate_detector_node[0m
+[4.838s] [100%] Built target aruco_gate_detector_node
+[4.846s] Invoked command in '/home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --build /home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector -- -j16 -l16
+[4.870s] Invoking command in '/home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --install /home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector
+[4.875s] -- Install configuration: ""
+[4.875s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/lib/aruco_gate_detector/aruco_gate_detector_node
+[4.877s] -- Set runtime path of "/home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/lib/aruco_gate_detector/aruco_gate_detector_node" to ""
+[4.877s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/ament_index/resource_index/package_run_dependencies/aruco_gate_detector
+[4.877s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/ament_index/resource_index/parent_prefix_path/aruco_gate_detector
+[4.877s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/environment/ament_prefix_path.sh
+[4.877s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/environment/ament_prefix_path.dsv
+[4.877s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/environment/path.sh
+[4.878s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/environment/path.dsv
+[4.878s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/local_setup.bash
+[4.878s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/local_setup.sh
+[4.878s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/local_setup.zsh
+[4.878s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/local_setup.dsv
+[4.878s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/package.dsv
+[4.878s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/ament_index/resource_index/packages/aruco_gate_detector
+[4.878s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/cmake/aruco_gate_detectorConfig.cmake
+[4.878s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/cmake/aruco_gate_detectorConfig-version.cmake
+[4.879s] -- Installing: /home/dps/aerostack2_ws/src/aruco_gate_detector/install/aruco_gate_detector/share/aruco_gate_detector/package.xml
+[4.880s] Invoked command in '/home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --install /home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector

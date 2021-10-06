@@ -1,0 +1,1 @@
+rclcpp;aerostack2_core;aerostack2_msgs;std_msgs;std_svrs;sensor_msgs;geometry_msgs;nav_msgs;tf2;tf2_ros;tf2_geometry_msgs;cv_bridge
