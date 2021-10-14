@@ -1,2 +1,0 @@
-Invoking command in '/home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --build /home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector -- -j16 -l16
-Invoked command in '/home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/foxy /usr/bin/cmake --build /home/dps/aerostack2_ws/src/aruco_gate_detector/build/aruco_gate_detector -- -j16 -l16
