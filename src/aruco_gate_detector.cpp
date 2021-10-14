@@ -27,12 +27,6 @@ ArucoGateDetector::ArucoGateDetector()
   
   aruco_dict_ = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 
-    // Initialize the transform broadcaster
-    // tf_broadcaster_       = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
-    // tfstatic_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
-    // tf_buffer_            = std::make_shared<tf2_ros::Buffer>(this->get_clock());
-    // tf_listener_          = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
-
 };
 
 ArucoGateDetector::~ArucoGateDetector(){
