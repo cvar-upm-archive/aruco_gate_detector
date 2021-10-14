@@ -48,6 +48,9 @@ set(SOURCE_CPP_FILES
 add_executable(${PROJECT_NAME}_node src/aruco_gate_detector_node.cpp ${SOURCE_CPP_FILES})
 ament_target_dependencies(${PROJECT_NAME}_node rclcpp aerostack2_core aerostack2_msgs std_msgs std_srvs sensor_msgs geometry_msgs nav_msgs cv_bridge tf2 tf2_ros tf2_geometry_msgs)
 
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   ${PROJECT_NAME}_node

@@ -14,7 +14,7 @@ static const cv::Mat dist_coeffs(1, 4, CV_64F, &dc);
 #define ARUCO_SIZE 0.175 //meters
 #define N_GATES 2
 #define GATE_SIZE 1.4 //meters
-#define CAMERA_TOPIC "/image_raw"
+#define CAMERA_TOPIC "image_raw"
 
 ArucoGateDetector::ArucoGateDetector()
     :aerostack2::Node("aruco_gate_detector")
