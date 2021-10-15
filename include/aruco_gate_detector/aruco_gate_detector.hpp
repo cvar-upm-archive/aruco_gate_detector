@@ -22,7 +22,7 @@ class ArucoGateDetector : public aerostack2::Node
 {
 public:
   ArucoGateDetector();
-  ~ArucoGateDetector();
+  ~ArucoGateDetector(){};
 
 private:
   // Sensor comm

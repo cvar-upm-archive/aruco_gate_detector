@@ -29,10 +29,6 @@ ArucoGateDetector::ArucoGateDetector()
 
 };
 
-ArucoGateDetector::~ArucoGateDetector(){
-    return;
-};  
-
 void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr img){
 
     cv_bridge::CvImagePtr cv_ptr;
@@ -88,8 +84,8 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
         geometry_msgs::msg::PoseStamped pose;
         pose.header.frame_id = "camera_link";
         pose.pose.position.x = gate_positions[i][0];
-        pose.pose.position.x = gate_positions[i][1];
-        pose.pose.position.x = gate_positions[i][2];
+        pose.pose.position.y = gate_positions[i][1];
+        pose.pose.position.z = gate_positions[i][2];
         tf2::Quaternion rot;
         rot.setRPY(gate_rotations[i][2],gate_rotations[i][0],gate_rotations[i][1]);
         rot=rot.normalize();
