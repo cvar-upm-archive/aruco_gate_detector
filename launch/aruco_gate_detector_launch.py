@@ -46,11 +46,6 @@ def generate_launch_description():
             output='screen',
             emulate_tty=True
         ),
-        # Node( 
-        #     package='tf_publishser',
-        #     node_executable='tf_publishser',
-        #     node_name='tf_publishser1'
-        # ),
         Node(
             # Tf from baselink to RGB cam
             package='tf2_ros',

@@ -2,8 +2,16 @@
 
 //TODO: MOVE TO CONFIG
 
-double cm[3][3] = {{790.8989920514197, 0.0, 670.332791421756},{0.0, 789.6808338497912, 370.6481124492188}, {0.0, 0.0, 1.0}};
-double dc[3][3] = {-0.03448682771417174, -0.055932650937412745, 0.11969799783448262, -0.09163586323944228};
+// double cm[3][3] = {{790.8989920514197, 0.0, 670.332791421756},{0.0, 789.6808338497912, 370.6481124492188}, {0.0, 0.0, 1.0}};
+// double dc[3][3] = {-0.03448682771417174, -0.055932650937412745, 0.11969799783448262, -0.09163586323944228};
+
+
+double cm[3][3] = {{3.92621786e+03,0.00000000e+00 , 6.65363971e+02},
+ {0.00000000e+00, 4.60080223e+03,3.72093033e+02},
+ {0.00000000e+00, 0.00000000e+00,1.00000000e+00}};
+
+
+double dc[3][3]  = {-1.58518103e+01 , 3.51438196e+02 , 3.63865440e-03, -4.48952034e-02, -3.11620466e+03};
 // double cm[3][3] = {{271.41185355986505, 0.0, 328.1468456833846}, 
 //                 {0.0, 271.9319426344339, 244.31031054397735}, 
 //                 {0.0, 0.0, 1.0}};
@@ -14,7 +22,8 @@ static const cv::Mat dist_coeffs(1, 4, CV_64F, &dc);
 #define ARUCO_SIZE 0.175 //meters
 #define N_GATES 2
 #define GATE_SIZE 1.4 //meters
-#define CAMERA_TOPIC "/drone0/camera1/image_raw"
+// #define CAMERA_TOPIC "/drone0/camera1/image_raw"
+#define CAMERA_TOPIC "image_raw"
 
 ArucoGateDetector::ArucoGateDetector()
     :aerostack2::Node("aruco_gate_detector")
@@ -26,7 +35,6 @@ ArucoGateDetector::ArucoGateDetector()
     CAMERA_TOPIC, 1, std::bind(&ArucoGateDetector::imageCallback, this, std::placeholders::_1));
   
   aruco_dict_ = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
-
 };
 
 void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr img){
@@ -75,11 +83,23 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
     
     //TODO : CONFIGURE THIS ON A LAUNCH FILE
     //use opencv functions to rectify output image using camera matrix and distortion coefficients
+    //OPTION 1:
     cv::Mat rectified_image, undistort_camera_matrix;
-    undistort_camera_matrix = cv::getOptimalNewCameraMatrix(camera_matrix,dist_coeffs,cv_ptr->image.size(),1,cv_ptr->image.size());
+    cv::Rect roi;
+    undistort_camera_matrix = cv::getOptimalNewCameraMatrix(camera_matrix,dist_coeffs,output_image.size(),1,output_image.size(),&roi);
     cv::undistort(output_image,rectified_image,camera_matrix,dist_coeffs,undistort_camera_matrix);
+    cv::Mat cropped_image = rectified_image(roi);
+     
+    //OPTION 2:
+    // cv::Mat cropped_image;
+    // cv::OutputArray map1 = cv::noArray();
+    // cv::OutputArray map2 = cv::noArray();
+    // cv::initUndistortRectifyMap(camera_matrix, dist_coeffs, cv::Mat(), camera_matrix, output_image.size(),CV_32FC1, map1, map2);
+    // cv::remap(output_image, cropped_image, map1, map2, cv::INTER_LINEAR);
 
-    sensor_msgs::msg::Image output_image_msg = *(cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", rectified_image).toImageMsg().get());
+
+
+    sensor_msgs::msg::Image output_image_msg = *(cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", cropped_image).toImageMsg().get());
     gate_img_->publishData(output_image_msg);
 
     // Publish path
@@ -104,5 +124,4 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
     }
     
     gate_pose_->publishData(path);
-
 };
