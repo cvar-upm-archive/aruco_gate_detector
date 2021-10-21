@@ -2,28 +2,33 @@
 
 //TODO: MOVE TO CONFIG
 
-// double cm[3][3] = {{790.8989920514197, 0.0, 670.332791421756},{0.0, 789.6808338497912, 370.6481124492188}, {0.0, 0.0, 1.0}};
-// double dc[3][3] = {-0.03448682771417174, -0.055932650937412745, 0.11969799783448262, -0.09163586323944228};
+// REAL CAMERA PARAMETERS
 
-
-double cm[3][3] = {{3.92621786e+03,0.00000000e+00 , 6.65363971e+02},
+/* double cm[3][3] = {{3.92621786e+03,0.00000000e+00 , 6.65363971e+02},
  {0.00000000e+00, 4.60080223e+03,3.72093033e+02},
  {0.00000000e+00, 0.00000000e+00,1.00000000e+00}};
-
-
 double dc[3][3]  = {-1.58518103e+01 , 3.51438196e+02 , 3.63865440e-03, -4.48952034e-02, -3.11620466e+03};
-// double cm[3][3] = {{271.41185355986505, 0.0, 328.1468456833846}, 
-//                 {0.0, 271.9319426344339, 244.31031054397735}, 
-//                 {0.0, 0.0, 1.0}};
-// double dc[4] = {-0.0392415594794219, -0.014237193354866373, 0.012623563386809904, -0.004288976471675887};
+#define CAMERA_TOPIC "image_raw"
+ */
+ 
+// SIMULATION PARAMETERS
+double cm[3][3] = { {935.4854061299853,0, 640.5},
+                    {0, 935.4854061299853,360.5},
+                    {0, 0,1.0}};
+double dc[3][3]  = {0,0,0,0,0};
+#define CAMERA_TOPIC "/drone0/camera1/image_raw"
+
+//----
+
+
 static const cv::Mat camera_matrix(3, 3, CV_64F, &cm);
 static const cv::Mat dist_coeffs(1, 4, CV_64F, &dc);
 
 #define ARUCO_SIZE 0.175 //meters
 #define N_GATES 2
 #define GATE_SIZE 1.4 //meters
-// #define CAMERA_TOPIC "/drone0/camera1/image_raw"
-#define CAMERA_TOPIC "image_raw"
+
+
 
 ArucoGateDetector::ArucoGateDetector()
     :aerostack2::Node("aruco_gate_detector")
