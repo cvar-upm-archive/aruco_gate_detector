@@ -14,7 +14,7 @@ static const cv::Mat dist_coeffs(1, 4, CV_64F, &dc);
 #define ARUCO_SIZE 0.175 //meters
 #define N_GATES 2
 #define GATE_SIZE 1.4 //meters
-#define CAMERA_TOPIC "image_raw"
+#define CAMERA_TOPIC "/drone0/camera1/image_raw"
 
 ArucoGateDetector::ArucoGateDetector()
     :aerostack2::Node("aruco_gate_detector")
@@ -72,8 +72,14 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
             }
         }
     }
+    
+    //TODO : CONFIGURE THIS ON A LAUNCH FILE
+    //use opencv functions to rectify output image using camera matrix and distortion coefficients
+    cv::Mat rectified_image, undistort_camera_matrix;
+    undistort_camera_matrix = cv::getOptimalNewCameraMatrix(camera_matrix,dist_coeffs,cv_ptr->image.size(),1,cv_ptr->image.size());
+    cv::undistort(output_image,rectified_image,camera_matrix,dist_coeffs,undistort_camera_matrix);
 
-    sensor_msgs::msg::Image output_image_msg = *(cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", output_image).toImageMsg().get());
+    sensor_msgs::msg::Image output_image_msg = *(cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", rectified_image).toImageMsg().get());
     gate_img_->publishData(output_image_msg);
 
     // Publish path
