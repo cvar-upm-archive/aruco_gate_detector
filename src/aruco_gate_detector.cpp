@@ -9,6 +9,9 @@
  {0.00000000e+00, 0.00000000e+00,1.00000000e+00}};
 double dc[3][3]  = {-1.58518103e+01 , 3.51438196e+02 , 3.63865440e-03, -4.48952034e-02, -3.11620466e+03};
 #define CAMERA_TOPIC "image_raw"
+#define ARUCO_SIZE 0.175 //meters
+#define N_GATES 2
+#define GATE_SIZE 1.4 //meters
  */
  
 // SIMULATION PARAMETERS
@@ -18,16 +21,14 @@ double cm[3][3] = { {935.4854061299853,0, 640.5},
 double dc[3][3]  = {0,0,0,0,0};
 #define CAMERA_TOPIC "/drone0/camera1/image_raw"
 
-//----
+#define ARUCO_SIZE 0.2 //meters
+#define N_GATES 6
+#define GATE_SIZE 1.6 //meters
 
+//----
 
 static const cv::Mat camera_matrix(3, 3, CV_64F, &cm);
 static const cv::Mat dist_coeffs(1, 4, CV_64F, &dc);
-
-#define ARUCO_SIZE 0.175 //meters
-#define N_GATES 2
-#define GATE_SIZE 1.4 //meters
-
 
 
 ArucoGateDetector::ArucoGateDetector()
@@ -75,7 +76,7 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
                 auto rvec = rvecs[i];
                 auto tvec = tvecs[i];
                 cv::Vec3d t_gate;
-                t_gate[0] = -GATE_SIZE / 2;
+                t_gate[0] = -GATE_SIZE / 2.0f;
                 auto rout = rvec * 0;
                 auto tout = tvec * 0;
                 cv::composeRT(rvec * 0, t_gate, rvec, tvec, rout, tout);
