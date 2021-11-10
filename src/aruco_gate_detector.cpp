@@ -20,9 +20,9 @@ double cm[3][3] = { {507.87273461908296,0, 640.5},
 double dc[3][3]  = {0,0,0,0,0};
 #define CAMERA_TOPIC "/drone0/camera1/image_raw"
 
-#define ARUCO_SIZE 0.2 //meters
+#define ARUCO_SIZE 0.3 //meters
 #define N_GATES 6
-#define GATE_SIZE 1.6 //meters
+#define GATE_SIZE 2.4 //1.6 //meters
 
 
 //----
