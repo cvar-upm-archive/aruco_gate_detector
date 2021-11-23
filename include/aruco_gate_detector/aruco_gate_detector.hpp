@@ -10,15 +10,15 @@
 #include <rclcpp/rclcpp.hpp>
 #include <vector>
 
-#include "aerostack2_core/node.hpp"
-#include "aerostack2_core/sensor.hpp"
+#include "as2_core/node.hpp"
+#include "as2_core/sensor.hpp"
 #include "nav_msgs/msg/path.hpp"
 #include "sensor_msgs/image_encodings.hpp"
 #include "sensor_msgs/msg/image.hpp"
 
 // #include <image_transport/image_transport.h>
 
-class ArucoGateDetector : public aerostack2::Node
+class ArucoGateDetector : public as2::Node
 {
 public:
   ArucoGateDetector();
@@ -29,8 +29,8 @@ private:
   std::string serial_;
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr cam_image_;
   // Sensor measurement
-  std::shared_ptr<aerostack2::Sensor<nav_msgs::msg::Path>> gate_pose_;
-  std::shared_ptr<aerostack2::Sensor<sensor_msgs::msg::Image>> gate_img_;
+  std::shared_ptr<as2::sensors::Sensor<nav_msgs::msg::Path>> gate_pose_;
+  std::shared_ptr<as2::sensors::Sensor<sensor_msgs::msg::Image>> gate_img_;
   cv::Ptr<cv::aruco::Dictionary> aruco_dict_;
 
   void imageCallback(const sensor_msgs::msg::Image::SharedPtr img);

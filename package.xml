@@ -10,8 +10,8 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>aerostack2_core</depend>
-  <depend>aerostack2_msgs</depend>
+  <depend>as2_core</depend>
+  <depend>as2_msgs</depend>
   <depend>std_msgs</depend>
   <depend>std_svrs</depend>
   

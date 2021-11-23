@@ -11,8 +11,8 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(aerostack2_core REQUIRED)
-find_package(aerostack2_msgs REQUIRED)
+find_package(as2_core REQUIRED)
+find_package(as2_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 
@@ -43,10 +43,10 @@ set(SOURCE_CPP_FILES
 
 #add_executable(test_pose src/test_pose.cpp)
 #target_link_libraries(test_pose ${realsense2_LIBRARY})
-#ament_target_dependencies(test_pose rclcpp std_msgs realsense2 aerostack2_core aerostack2_msgs)
+#ament_target_dependencies(test_pose rclcpp std_msgs realsense2 as2_core as2_msgs)
 
 add_executable(${PROJECT_NAME}_node src/aruco_gate_detector_node.cpp ${SOURCE_CPP_FILES})
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp aerostack2_core aerostack2_msgs std_msgs std_srvs sensor_msgs geometry_msgs nav_msgs cv_bridge tf2 tf2_ros tf2_geometry_msgs)
+ament_target_dependencies(${PROJECT_NAME}_node rclcpp as2_core as2_msgs std_msgs std_srvs sensor_msgs geometry_msgs nav_msgs cv_bridge tf2 tf2_ros tf2_geometry_msgs)
 
 install(DIRECTORY
   launch

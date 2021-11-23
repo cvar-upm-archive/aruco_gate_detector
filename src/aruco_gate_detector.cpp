@@ -32,10 +32,10 @@ static const cv::Mat dist_coeffs(1, 4, CV_64F, &dc);
 
 
 ArucoGateDetector::ArucoGateDetector()
-    :aerostack2::Node("aruco_gate_detector")
+    :as2::Node("aruco_gate_detector")
 {
-  gate_pose_  = std::make_shared<aerostack2::Sensor<nav_msgs::msg::Path>>("gate_pose_topic", this);
-  gate_img_   = std::make_shared<aerostack2::Sensor<sensor_msgs::msg::Image>>("gate_img_topic", this);
+  gate_pose_  = std::make_shared<as2::sensors::Sensor<nav_msgs::msg::Path>>("gate_pose_topic", this);
+  gate_img_   = std::make_shared<as2::sensors::Sensor<sensor_msgs::msg::Image>>("gate_img_topic", this);
 
   cam_image_  = this->create_subscription<sensor_msgs::msg::Image>(
     CAMERA_TOPIC, 1, std::bind(&ArucoGateDetector::imageCallback, this, std::placeholders::_1));

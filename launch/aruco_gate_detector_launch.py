@@ -1,9 +1,8 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from math import pi
-from launch.actions import OpaqueFunction
 
 # CAMERA_LINK POSITION FROM BASE_LINK
 x = 0.1
@@ -35,10 +34,10 @@ def staticTransformNode(context, *args, **kwargs):
 
 def generate_launch_description(ns = 'drone0'):
 
-    drone_id = DeclareLaunchArgument('drone_id', default_value='drone0')
+    drone_id     = DeclareLaunchArgument('drone_id', default_value='drone0')
     video_device = DeclareLaunchArgument('video_device', default_value='/dev/video0')
-    framerate = DeclareLaunchArgument('framerate', default_value='30.0')
-    image_width = DeclareLaunchArgument('image_width', default_value='1280')
+    framerate    = DeclareLaunchArgument('framerate', default_value='30.0')
+    image_width  = DeclareLaunchArgument('image_width', default_value='1280')
     image_height = DeclareLaunchArgument('image_height', default_value='720')
 
     return LaunchDescription([
