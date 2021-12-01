@@ -31,20 +31,15 @@
  ********************************************************************************/
 
 #include "aruco_gate_detector.hpp"
+#include "as2_core/core_functions.hpp"
 
 int main(int argc, char * argv[])
 {
-  // find_device_with_streams
   std::cout << "Starting camera listener node... " << std::endl;
-  setvbuf(stdout, NULL, _IONBF, BUFSIZ);
   rclcpp::init(argc, argv);
-  auto ptr = std::make_shared<ArucoGateDetector>();
-
-  while (rclcpp::ok()) {
-
-    rclcpp::spin(ptr);
-    
-  }
+  auto node = std::make_shared<ArucoGateDetector>();
+  node->preset_loop_frequency(60);
+  as2::spinLoop(node);
 
   rclcpp::shutdown();
   return 0;
