@@ -50,7 +50,8 @@ double cm[3][3] = { {507.87273461908296,0, 640.5},
                     {0, 507.87273461908296,360.5},
                     {0, 0,1.0}};
 double dc[3][3]  = {0,0,0,0,0};
-#define CAMERA_TOPIC "/drone0/camera1/image_raw"
+
+#define CAMERA_TOPIC "camera1/image_raw"
 
 #define ARUCO_SIZE 0.3 //meters
 #define N_GATES 6
@@ -66,16 +67,20 @@ static const cv::Mat dist_coeffs(1, 4, CV_64F, &dc);
 ArucoGateDetector::ArucoGateDetector()
     :as2::Node("aruco_gate_detector")
 {
+  std::string ns = this->get_namespace();
+
   gate_pose_  = std::make_shared<as2::sensors::Sensor<nav_msgs::msg::Path>>("gate_pose_topic", this);
   gate_img_   = std::make_shared<as2::sensors::Sensor<sensor_msgs::msg::Image>>("gate_img_topic", this);
 
   cam_image_  = this->create_subscription<sensor_msgs::msg::Image>(
-    CAMERA_TOPIC, 1, std::bind(&ArucoGateDetector::imageCallback, this, std::placeholders::_1));
+    this->generate_global_name(CAMERA_TOPIC), 1, std::bind(&ArucoGateDetector::imageCallback, this, std::placeholders::_1));
   
   aruco_dict_ = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 };
 
 void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr img){
+
+    RCLCPP_DEBUG(this->get_logger(),"Image received by callback");
 
     cv_bridge::CvImagePtr cv_ptr;
     try {

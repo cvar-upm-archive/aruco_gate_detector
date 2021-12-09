@@ -39,12 +39,14 @@ int main(int argc, char * argv[])
   setvbuf(stdout, NULL, _IONBF, BUFSIZ);
   rclcpp::init(argc, argv);
   auto ptr = std::make_shared<ArucoGateDetector>();
+  rclcpp::Rate r(200);
 
-  while (rclcpp::ok()) {
+  rclcpp::spin(ptr);
 
-    rclcpp::spin(ptr);
-    
-  }
+  // while (rclcpp::ok()) {
+  //   // rclcpp::spin_some(ptr);
+  //   // r.sleep();
+  // }
 
   rclcpp::shutdown();
   return 0;

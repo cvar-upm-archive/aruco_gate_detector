@@ -65,7 +65,7 @@ public:
 
 private:
   // Sensor comm
-  std::string serial_;
+  // std::string serial_;
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr cam_image_;
   // Sensor measurement
   std::shared_ptr<as2::sensors::Sensor<nav_msgs::msg::Path>> gate_pose_;
