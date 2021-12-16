@@ -8,6 +8,7 @@ from math import pi
 x = 0.1
 y = 0
 z = 0.03
+
 roll  = -(90/180)*pi
 pitch = 0
 yaw   = -(90/180)*pi
@@ -58,8 +59,6 @@ def cameraNode(context, *args, **kwargs):
   return [camera_node]
 
 
-
-
 def generate_launch_description(ns = 'drone0'):
 
   drone_id     = DeclareLaunchArgument('drone_id', default_value='drone0')
@@ -71,23 +70,7 @@ def generate_launch_description(ns = 'drone0'):
   return LaunchDescription([
     drone_id, video_device, framerate, image_width, image_height,
 
-    # Node(
-    #     # usb_cam usb_cam_node_exe --ros-args -p video_device:=/dev/video2 -p framerate:=30.0 -p image_width:=1280 -p image_height:=720
-    #     package='usb_cam',
-    #     executable='usb_cam_node_exe',
-    #     name='usb_cam_node_exe',
-    #     namespace=LaunchConfiguration('drone_id'),
-    #     output='screen',
-    #     emulate_tty=True,
-    #     parameters=[
-    #       {'video_device':LaunchConfiguration('video_device'),
-    #       'framerate':LaunchConfiguration('framerate'),
-    #       'image_width':LaunchConfiguration('image_width'),
-    #       'image_height':LaunchConfiguration('image_height')
-    #       }
-    #     ]
-    # ),
-    # OpaqueFunction(function=cameraNode),
+    # OpaqueFunction(function=cameraNode), // Comment for simulation
 
     Node(
       package='aruco_gate_detector',
