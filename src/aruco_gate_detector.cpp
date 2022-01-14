@@ -35,18 +35,17 @@
 //TODO: MOVE TO CONFIG
 
 // REAL CAMERA PARAMETERS
-/* 
 double cm[3][3] = {{519.9198295939999, 0.0, 659.1468132131484}, {0.0, 502.46760776515197, 357.57506142772786}, {0.0, 0.0, 1.0}};
 double dc[3][3] = {-0.021303744666207214, -0.006628539603283135, -0.007097678030316164, 0.002559386685475455};
 
-#define CAMERA_TOPIC "image_raw"
+#define CAMERA_TOPIC "camera1/image_raw"
 #define ARUCO_SIZE 0.175 //meters
 #define N_GATES 4
 #define GATE_SIZE 1.4 //meters
- */
+
  
 // SIMULATION PARAMETERS
-double cm[3][3] = { {507.87273461908296,0, 640.5},
+/* double cm[3][3] = { {507.87273461908296,0, 640.5},
                     {0, 507.87273461908296,360.5},
                     {0, 0,1.0}};
 double dc[3][3]  = {0,0,0,0,0};
@@ -55,7 +54,7 @@ double dc[3][3]  = {0,0,0,0,0};
 
 #define ARUCO_SIZE 0.3 //meters
 #define N_GATES 6
-#define GATE_SIZE 2.4 //1.6 //meters
+#define GATE_SIZE 2.4 //1.6 //meters */
 
 
 //----

@@ -58,8 +58,6 @@ def cameraNode(context, *args, **kwargs):
   return [camera_node]
 
 
-
-
 def generate_launch_description(ns = 'drone0'):
 
   drone_id     = DeclareLaunchArgument('drone_id', default_value='drone0')
@@ -87,7 +85,7 @@ def generate_launch_description(ns = 'drone0'):
     #       }
     #     ]
     # ),
-    # OpaqueFunction(function=cameraNode),
+    OpaqueFunction(function=cameraNode),
 
     Node(
       package='aruco_gate_detector',
