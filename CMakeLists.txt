@@ -8,23 +8,27 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-# find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(as2_core REQUIRED)
-find_package(as2_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(std_srvs REQUIRED)
 
-find_package(sensor_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(nav_msgs REQUIRED)
 
-find_package(cv_bridge REQUIRED)
+set(PROJECT_DEPENDENCIES
+ament_cmake
+rclcpp
+as2_core
+as2_msgs
+std_msgs
+std_srvs
+sensor_msgs
+geometry_msgs
+nav_msgs
+cv_bridge
+tf2
+tf2_ros
+tf2_geometry_msgs
+)
 
-find_package(tf2 REQUIRED)
-find_package(tf2_ros REQUIRED)
-find_package(tf2_geometry_msgs REQUIRED)
+foreach(DEPENDENCY ${PROJECT_DEPENDENCIES})
+  find_package(${DEPENDENCY} REQUIRED)
+endforeach()
 
 
 include_directories(
@@ -46,7 +50,9 @@ set(SOURCE_CPP_FILES
 #ament_target_dependencies(test_pose rclcpp std_msgs realsense2 as2_core as2_msgs)
 
 add_executable(${PROJECT_NAME}_node src/aruco_gate_detector_node.cpp ${SOURCE_CPP_FILES})
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp as2_core as2_msgs std_msgs std_srvs sensor_msgs geometry_msgs nav_msgs cv_bridge tf2 tf2_ros tf2_geometry_msgs)
+ament_target_dependencies(${PROJECT_NAME}_node ${PROJECT_DEPENDENCIES})
+
+include(tests/profiling_cmake.cmake)
 
 install(DIRECTORY
   launch
