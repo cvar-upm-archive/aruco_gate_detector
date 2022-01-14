@@ -38,7 +38,7 @@ int main(int argc, char * argv[])
   std::cout << "Starting camera listener node... " << std::endl;
   rclcpp::init(argc, argv);
   auto node = std::make_shared<ArucoGateDetector>();
-  node->preset_loop_frequency(60);
+  node->preset_loop_frequency(30);
   as2::spinLoop(node);
 
   rclcpp::shutdown();
