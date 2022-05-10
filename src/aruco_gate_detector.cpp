@@ -145,7 +145,7 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
     //  cv::remap(output_image, cropped_image, map1, map2, cv::INTER_LINEAR);
 
     sensor_msgs::msg::Image output_image_msg = *(cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", cropped_image).toImageMsg().get());
-    gate_img_->publishData(output_image_msg);
+    gate_img_->updateData(output_image_msg);
 
     // Publish path
     nav_msgs::msg::Path path;
@@ -168,5 +168,5 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
         path.poses.push_back(pose);
     }
 
-    gate_pose_->publishData(path);
+    gate_pose_->updateData(path);
 };
