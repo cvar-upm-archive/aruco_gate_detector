@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.5)
 
 set(PROJECT_NAME aruco_gate_detector)
-project(${PROJECT_NAME})
+project(${PROJECT_NAME} VERSION 0.1.0)
 
-# Default to C++14
+# Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
 
-
+# set Release as default
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
 
 set(PROJECT_DEPENDENCIES
 ament_cmake
@@ -24,6 +27,7 @@ cv_bridge
 tf2
 tf2_ros
 tf2_geometry_msgs
+yaml-cpp
 )
 
 foreach(DEPENDENCY ${PROJECT_DEPENDENCIES})
@@ -45,18 +49,17 @@ set(SOURCE_CPP_FILES
   src/aruco_gate_detector.cpp
 )
 
-#add_executable(test_pose src/test_pose.cpp)
-#target_link_libraries(test_pose ${realsense2_LIBRARY})
-#ament_target_dependencies(test_pose rclcpp std_msgs realsense2 as2_core as2_msgs)
-
 add_executable(${PROJECT_NAME}_node src/aruco_gate_detector_node.cpp ${SOURCE_CPP_FILES})
+target_link_libraries(${PROJECT_NAME}_node yaml-cpp)
 ament_target_dependencies(${PROJECT_NAME}_node ${PROJECT_DEPENDENCIES})
 
 include(tests/profiling_cmake.cmake)
 
 install(DIRECTORY
   launch
-  DESTINATION share/${PROJECT_NAME})
+  config
+  DESTINATION share/${PROJECT_NAME}
+)
 
 install(TARGETS
   ${PROJECT_NAME}_node

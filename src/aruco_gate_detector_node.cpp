@@ -1,13 +1,13 @@
 /*!*******************************************************************************************
  *  \file       aruco_gate_detector_node.cpp
- *  \brief      Aruco gate detector node file.
+ *  \brief      aruco gate detector node file.
  *  \authors    David Perez Saura
- *  \copyright  Copyright (c) 2021 Universidad Politécnica de Madrid
+ *  \copyright  Copyright (c) 2022 Universidad Politécnica de Madrid
  *              All Rights Reserved
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
@@ -16,7 +16,7 @@
  * 3. Neither the name of the copyright holder nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -33,9 +33,8 @@
 #include "aruco_gate_detector.hpp"
 #include "as2_core/core_functions.hpp"
 
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
-  std::cout << "Starting camera listener node... " << std::endl;
   rclcpp::init(argc, argv);
   auto node = std::make_shared<ArucoGateDetector>();
   node->preset_loop_frequency(30);

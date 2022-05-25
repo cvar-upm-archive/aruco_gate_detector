@@ -2,7 +2,7 @@
  *  \file       aruco_gate_detector.hpp
  *  \brief      Aruco gate detector header file.
  *  \authors    David Perez Saura
- *  \copyright  Copyright (c) 2021 Universidad Politécnica de Madrid
+ *  \copyright  Copyright (c) 2022 Universidad Politécnica de Madrid
  *              All Rights Reserved
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,22 +33,22 @@
 #ifndef ARUCO_GATE_DETECTOR_HPP_
 #define ARUCO_GATE_DETECTOR_HPP_
 
-#include <cv_bridge/cv_bridge.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-
-#include <memory>
-#include <opencv2/aruco.hpp>
-#include <opencv2/calib3d.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <vector>
-
 #include "as2_core/node.hpp"
 #include "as2_core/sensor.hpp"
+#include "as2_core/names/topics.hpp"
+
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include "nav_msgs/msg/path.hpp"
 #include "sensor_msgs/image_encodings.hpp"
 #include "sensor_msgs/msg/image.hpp"
 
-// #include <image_transport/image_transport.h>
+#include <memory>
+#include <vector>
+#include <cv_bridge/cv_bridge.h>
+#include <image_transport/image_transport.hpp>
+#include <opencv2/aruco.hpp>
+#include <opencv2/calib3d.hpp>
 
 class ArucoGateDetector : public as2::Node
 {
@@ -64,13 +64,21 @@ public:
   ~ArucoGateDetector(){};
 
 private:
-  // Sensor comm
-  // std::string serial_;
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr cam_image_;
-  // Sensor measurement
+
   std::shared_ptr<as2::sensors::Sensor<nav_msgs::msg::Path>> gate_pose_;
-  std::shared_ptr<as2::sensors::Sensor<sensor_msgs::msg::Image>> gate_img_;
+  // std::shared_ptr<as2::sensors::Sensor<sensor_msgs::msg::Image>> gate_img_;
+  std::shared_ptr<as2::sensors::Camera> gate_img_transport_;
+
+  int n_aruco_ids_;
+  float aruco_size_;
+  float gate_size_;
+  cv::Mat camera_matrix_;
+  cv::Mat dist_coeffs_;
   cv::Ptr<cv::aruco::Dictionary> aruco_dict_;
+
+  void setCameraInfo(const cv::Mat &_camera_matrix, const cv::Mat &_dist_coeffs);
+  void loadParameters();
 
 public:
   void imageCallback(const sensor_msgs::msg::Image::SharedPtr img);
