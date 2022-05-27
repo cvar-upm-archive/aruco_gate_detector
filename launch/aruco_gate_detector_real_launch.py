@@ -45,23 +45,20 @@ def staticTransformNode(context, *args, **kwargs):
 def cameraNode(context, *args, **kwargs):
 
     ns = LaunchConfiguration('drone_id').perform(context)
-    camera_ns = ns + '/sensor_measurements/camera1'
+    camera_ns = ns + '/sensor_measurements/camera'
+    usbcam_params_path = os.path.join(os.getcwd(),'config/usb_cam','params.yaml')
+
+    # print(usbcam_params_path)
 
     # usb_cam usb_cam_node_exe --ros-args -p video_device:=/dev/video2 -p framerate:=30.0 -p image_width:=1280 -p image_height:=720
+    # --ros-args --params-file /path/to/colcon_ws/src/usb_cam/config/params.yaml
     camera_node = Node(
         package='usb_cam',
         executable='usb_cam_node_exe',
-        name='usb_cam_node_exe',
         namespace=camera_ns,
         output='screen',
         emulate_tty=True,
-        parameters=[
-            {'video_device': LaunchConfiguration('video_device'),
-             'framerate':    LaunchConfiguration('framerate'),
-             'image_width':  LaunchConfiguration('image_width'),
-             'image_height': LaunchConfiguration('image_height')
-             }
-        ]
+        parameters=[usbcam_params_path]
     )
 
     return [camera_node]
@@ -70,18 +67,19 @@ def cameraNode(context, *args, **kwargs):
 def generate_launch_description(ns='drone0'):
 
     drone_id = DeclareLaunchArgument('drone_id', default_value='drone0')
-    video_device = DeclareLaunchArgument(
-        'video_device', default_value='/dev/video0')
-    framerate = DeclareLaunchArgument('framerate', default_value='30.0')
-    image_width = DeclareLaunchArgument('image_width', default_value='1280')
-    image_height = DeclareLaunchArgument('image_height', default_value='720')
+    # video_device = DeclareLaunchArgument(
+    #     'video_device', default_value='/dev/video0')
+    # framerate = DeclareLaunchArgument('framerate', default_value='60.0')
+    # image_width = DeclareLaunchArgument('image_width', default_value='1280')
+    # image_height = DeclareLaunchArgument('image_height', default_value='720')
+    # pixel_format = DeclareLaunchArgument('pixel_format', default_value='mjpeg')
 
     config = os.path.join(get_package_share_directory('aruco_gate_detector'),
                           'config/aruco_gate_detector',
                           'real_params.yaml')
 
     return LaunchDescription([
-        drone_id, video_device, framerate, image_width, image_height,
+        # drone_id, video_device, framerate, image_width, image_height, pixel_format, 
 
         OpaqueFunction(function=cameraNode),
 

@@ -34,9 +34,19 @@
 
 // TODO: MOVE TO CONFIG
 
-// REAL CAMERA PARAMETERS
+// REAL CAMERA PARAMETERS OLD
 // double cm[3][3] = {{519.9198295939999, 0.0, 659.1468132131484}, {0.0, 502.46760776515197, 357.57506142772786}, {0.0, 0.0, 1.0}};
 // double dc[3][3] = {-0.021303744666207214, -0.006628539603283135, -0.007097678030316164, 0.002559386685475455};
+
+// WIDE03
+double cm[3][3] = {{578.23379804, 0.0, 634.62008734},
+                   {0.0, 584.44372181, 349.08043126},
+                   {0.0, 0.0, 1.0}};
+double dc[1][5] = {-0.25035782,
+                   0.04659447,
+                   0.00236036,
+                   0.00134053,
+                   -0.00330381};
 
 // #define CAMERA_TOPIC "image_raw" // "camera1/image_raw"
 // #define ARUCO_SIZE 0.175         // meters
@@ -55,10 +65,10 @@
 // #define CAMERA_TOPIC "image_raw" // "camera1/image_raw"
 
 // SIMULATION PARAMETERS
-double cm[3][3] = {{507.87273461908296, 0, 640.5},
-                   {0, 507.87273461908296, 360.5},
-                   {0, 0, 1.0}};
-double dc[3][3] = {0, 0, 0, 0, 0};
+// double cm[3][3] = {{507.87273461908296, 0, 640.5},
+//                    {0, 507.87273461908296, 360.5},
+//                    {0, 0, 1.0}};
+// double dc[3][3] = {0, 0, 0, 0, 0};
 // #define CAMERA_TOPIC "camera1/image_raw"
 
 // #define ARUCO_SIZE 0.3 // meters
@@ -193,7 +203,8 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
     // OPTION 1:
     cv::Mat rectified_image, undistort_camera_matrix;
     cv::Rect roi;
-    undistort_camera_matrix = cv::getOptimalNewCameraMatrix(camera_matrix_, dist_coeffs_, output_image.size(), 1.0, output_image.size(), &roi);
+    float alpha = 0.0;
+    undistort_camera_matrix = cv::getOptimalNewCameraMatrix(camera_matrix_, dist_coeffs_, output_image.size(), alpha, output_image.size(), &roi);
     cv::undistort(output_image, rectified_image, camera_matrix_, dist_coeffs_, undistort_camera_matrix);
     cv::Mat cropped_image = rectified_image(roi);
 
@@ -209,26 +220,30 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
     // gate_img_->updateData(output_image_msg);
 
     // Publish path
-    nav_msgs::msg::Path path;
-    path.header.frame_id = "camera_link";
-    for (int i = 0; i < n_aruco_ids_; i++)
+
+    if (marker_ids.size() > 0)
     {
-        geometry_msgs::msg::PoseStamped pose;
-        pose.header.frame_id = "camera_link";
-        pose.pose.position.x = gate_positions[i][0];
-        pose.pose.position.y = gate_positions[i][1];
-        pose.pose.position.z = gate_positions[i][2];
-        tf2::Quaternion rot;
-        rot.setRPY(gate_rotations[i][2], gate_rotations[i][0], gate_rotations[i][1]);
-        rot = rot.normalize();
-        pose.pose.orientation.x = (double)rot.x();
-        pose.pose.orientation.y = (double)rot.y();
-        pose.pose.orientation.z = (double)rot.z();
-        pose.pose.orientation.w = (double)rot.w();
+        nav_msgs::msg::Path path;
+        path.header.frame_id = "camera_link";
+        for (int i = 0; i < n_aruco_ids_; i++)
+        {
+            geometry_msgs::msg::PoseStamped pose;
+            pose.header.frame_id = "camera_link";
+            pose.pose.position.x = gate_positions[i][0];
+            pose.pose.position.y = gate_positions[i][1];
+            pose.pose.position.z = gate_positions[i][2];
+            tf2::Quaternion rot;
+            rot.setRPY(gate_rotations[i][2], gate_rotations[i][0], gate_rotations[i][1]);
+            rot = rot.normalize();
+            pose.pose.orientation.x = (double)rot.x();
+            pose.pose.orientation.y = (double)rot.y();
+            pose.pose.orientation.z = (double)rot.z();
+            pose.pose.orientation.w = (double)rot.w();
 
-        path.poses.push_back(pose);
+            path.poses.emplace_back(pose);
+        }
+
+        gate_pose_pub_->publish(path);
     }
-
-    gate_pose_pub_->publish(path);
     // gate_pose_pub_->updateData(path);
 };
