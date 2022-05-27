@@ -72,8 +72,11 @@ ArucoGateDetector::ArucoGateDetector()
 {
     std::string ns = this->get_namespace();
 
-    gate_pose_ = std::make_shared<as2::sensors::Sensor<nav_msgs::msg::Path>>("gate_pose_topic", this);
-    gate_img_transport_ = std::make_shared<as2::sensors::Camera>("gate_img_topic", this);
+    // gate_pose = std::make_shared<as2::sensors::Sensor<nav_msgs::msg::Path>>("gate_pose_topic", this);
+    gate_pose_pub_ = this->create_publisher<nav_msgs::msg::Path>(
+        this->generate_local_name("gate_poses"), rclcpp::SensorDataQoS());
+    gate_img_transport_ = std::make_shared<as2::sensors::Camera>(
+        "gate_img_topic", this);
 
     cam_image_ = this->create_subscription<sensor_msgs::msg::Image>(
         this->generate_global_name(as2_names::topics::sensor_measurements::camera + "/image_raw"),
@@ -226,5 +229,6 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
         path.poses.push_back(pose);
     }
 
-    gate_pose_->updateData(path);
+    gate_pose_pub_->publish(path);
+    // gate_pose_pub_->updateData(path);
 };

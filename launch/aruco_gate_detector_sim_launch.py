@@ -44,14 +44,13 @@ def staticTransformNode(context, *args, **kwargs):
 
 def generate_launch_description(ns='drone0'):
 
-    drone_id = DeclareLaunchArgument('drone_id', default_value='drone0')
-
     config = os.path.join(get_package_share_directory('aruco_gate_detector'),
                           'config/aruco_gate_detector',
                           'sim_params.yaml')
 
     return LaunchDescription([
-        drone_id,
+        DeclareLaunchArgument('drone_id', default_value='drone0'),
+        DeclareLaunchArgument('log_level', default_value='info'),
         Node(
             package='aruco_gate_detector',
             executable='aruco_gate_detector_node',

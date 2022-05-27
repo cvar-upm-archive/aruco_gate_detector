@@ -65,10 +65,11 @@ public:
 
 private:
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr cam_image_;
-
-  std::shared_ptr<as2::sensors::Sensor<nav_msgs::msg::Path>> gate_pose_;
-  // std::shared_ptr<as2::sensors::Sensor<sensor_msgs::msg::Image>> gate_img_;
+  rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr gate_pose_pub_;
   std::shared_ptr<as2::sensors::Camera> gate_img_transport_;
+
+  // std::shared_ptr<as2::sensors::Sensor<nav_msgs::msg::Path>> gate_pose_;
+  // std::shared_ptr<as2::sensors::Sensor<sensor_msgs::msg::Image>> gate_img_;
 
   int n_aruco_ids_;
   float aruco_size_;
