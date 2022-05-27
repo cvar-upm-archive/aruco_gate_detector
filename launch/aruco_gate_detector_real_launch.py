@@ -46,7 +46,7 @@ def cameraNode(context, *args, **kwargs):
 
     ns = LaunchConfiguration('drone_id').perform(context)
     camera_ns = ns + '/sensor_measurements/camera'
-    usbcam_params_path = os.path.join(os.getcwd(),'config/usb_cam','params.yaml')
+    usbcam_params_path = os.path.join(get_package_share_directory('aruco_gate_detector'),'config/usb_cam','params.yaml')
 
     # print(usbcam_params_path)
 
@@ -79,7 +79,8 @@ def generate_launch_description(ns='drone0'):
                           'real_params.yaml')
 
     return LaunchDescription([
-        # drone_id, video_device, framerate, image_width, image_height, pixel_format, 
+        drone_id,
+        # video_device, framerate, image_width, image_height, pixel_format, 
 
         OpaqueFunction(function=cameraNode),
 

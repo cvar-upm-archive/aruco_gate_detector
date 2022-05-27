@@ -39,33 +39,27 @@
 // double dc[3][3] = {-0.021303744666207214, -0.006628539603283135, -0.007097678030316164, 0.002559386685475455};
 
 // WIDE03
-double cm[3][3] = {{578.23379804, 0.0, 634.62008734},
-                   {0.0, 584.44372181, 349.08043126},
-                   {0.0, 0.0, 1.0}};
-double dc[1][5] = {-0.25035782,
-                   0.04659447,
-                   0.00236036,
-                   0.00134053,
-                   -0.00330381};
+// double cm[3][3] = {{2.24648362e+03, 0.0, 4.77031850e+02},
+//                    {0.0, 2.31582641e+03, 4.53653036e+02},
+//                    {0.0, 0.0, 1.0}};
+// double dc[1][5] = {-2.02409215,
+//                    4.13556539,
+//                    -0.05035131,
+//                    0.11815325,
+//                    -12.71601469};
 
-// #define CAMERA_TOPIC "image_raw" // "camera1/image_raw"
-// #define ARUCO_SIZE 0.175         // meters
-// #define N_GATES 4
-// #define GATE_SIZE 1.4 // meters
-
-// New USB Camera 0
+// WIDE01
 // double cm[3][3] = {{337.6587961, 0.0, 332.73411764},
 //                    {0.0, 338.56919595, 229.14558473},
 //                    {0.0, 0.0, 1.0}};
 // double dc[1][5] = {-0.29179988, 0.08567101, -0.00054972, 0.00033732, -0.01110803};
-// #define ARUCO_SIZE 0.175 // meters
-// #define N_GATES 4
-// #define GATE_SIZE 1.4 // meters
 
-// #define CAMERA_TOPIC "image_raw" // "camera1/image_raw"
+// WIDE01 FISHEYE
+double cm[3][3] = {{505.20174672723, 0.0, 647.8646199159122}, {0.0, 506.2586065372182, 352.6244449424373}, {0.0, 0.0, 1.0}};
+double dc[1][5] = {-0.03303864458954249, -0.061031201860639706, -0.009942171874437876, 0.024527641870623257};
 
 // SIMULATION PARAMETERS
-// double cm[3][3] = {{507.87273461908296, 0, 640.5},
+// double cm[3}[3] = {{507.87273461908296, 0, 640.5},
 //                    {0, 507.87273461908296, 360.5},
 //                    {0, 0, 1.0}};
 // double dc[3][3] = {0, 0, 0, 0, 0};
@@ -90,7 +84,7 @@ ArucoGateDetector::ArucoGateDetector()
 
     cam_image_ = this->create_subscription<sensor_msgs::msg::Image>(
         this->generate_global_name(as2_names::topics::sensor_measurements::camera + "/image_raw"),
-        as2_names::topics::sensor_measurements::qos,
+        rclcpp::QoS(2),
         std::bind(&ArucoGateDetector::imageCallback, this, std::placeholders::_1));
 
     loadParameters();
@@ -203,7 +197,7 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
     // OPTION 1:
     cv::Mat rectified_image, undistort_camera_matrix;
     cv::Rect roi;
-    float alpha = 0.0;
+    float alpha = 1.0;
     undistort_camera_matrix = cv::getOptimalNewCameraMatrix(camera_matrix_, dist_coeffs_, output_image.size(), alpha, output_image.size(), &roi);
     cv::undistort(output_image, rectified_image, camera_matrix_, dist_coeffs_, undistort_camera_matrix);
     cv::Mat cropped_image = rectified_image(roi);
