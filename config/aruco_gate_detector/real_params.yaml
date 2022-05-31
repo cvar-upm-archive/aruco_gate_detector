@@ -2,4 +2,4 @@
     ros__parameters:
         n_aruco_ids: 6
         aruco_size: 0.175 # meters
-        gate_size: 0.0 # 1.4 meters
+        gate_size: 1.4 # 1.4 meters
