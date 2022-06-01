@@ -74,6 +74,8 @@ private:
   int n_aruco_ids_;
   float aruco_size_;
   float gate_size_;
+  std::string camera_model_;
+  std::string distorsion_model_;
   cv::Mat camera_matrix_;
   cv::Mat dist_coeffs_;
   cv::Ptr<cv::aruco::Dictionary> aruco_dict_;

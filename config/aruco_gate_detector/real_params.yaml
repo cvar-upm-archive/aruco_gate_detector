@@ -2,4 +2,14 @@
     ros__parameters:
         n_aruco_ids: 6
         aruco_size: 0.175 # meters
-        gate_size: 1.4 # 1.4 meters
+        gate_size: 1.4 # meters
+        camera_model: "fisheye"
+        camera_matrix:
+            rows: 3
+            cols: 3
+            data: [508.60531713, 0.000000, 673.13938558, 0.000000, 509.52825387, 340.57394046, 0.000000, 0.000000, 1.000000]
+        distortion_model: "plumb_bob"
+        distortion_coefficients:
+            rows: 1
+            cols: 5
+            data: [-0.04115584, 0.05152566, -0.0490604, 0.01354326]

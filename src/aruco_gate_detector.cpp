@@ -34,9 +34,24 @@
 
 // TODO: MOVE TO CONFIG
 
-// REAL CAMERA PARAMETERS OLD
-double cm[3][3] = {{519.9198295939999, 0.0, 659.1468132131484}, {0.0, 502.46760776515197, 357.57506142772786}, {0.0, 0.0, 1.0}};
-double dc[3][3] = {-0.021303744666207214, -0.006628539603283135, -0.007097678030316164, 0.002559386685475455};
+// WIDE03
+// double cm[3][3] = {{519.9198295939999, 0.0, 659.1468132131484}, {0.0, 502.46760776515197, 357.57506142772786}, {0.0, 0.0, 1.0}};
+// double dc[3][3] = {-0.021303744666207214, -0.006628539603283135, -0.007097678030316164, 0.002559386685475455};
+
+// WIDE01 CHARUCO+FISHEYE
+// double cm[3][3] = {{4.2852150516007600e+02, 0.0, 6.4804331544416209e+02},
+//                    {0.0, 4.26467198208e+02, 3.5817221096516408e+02},
+//                    {0.0, 0.0, 1.0}};
+// double dc[3][3] = {7.0191344622352936e-02, -1.2101689581953802e-01, 1.1168828616522096e-01, -4.3857945453011388e-02};
+
+// WIDE01 MEDIA
+// double cm[3][3] = {{508.60531713, 0.0, 673.13938558},
+//                    {0.0, 509.52825387, 340.57394046},
+//                    {0.0, 0.0, 1.0}};
+// double dc[3][3] = {-0.04115584,
+//                    0.05152566,
+//                    -0.0490604,
+//                    0.01354326};
 
 // WIDE01 BEST VALUES
 // double cm[3][3] = {{637.9614926, 0.0, 667.98975122}, {0.0, 640.05361203, 333.91197236}, {0.0, 0.0, 1.0}};
@@ -102,21 +117,57 @@ void ArucoGateDetector::loadParameters()
     this->declare_parameter("n_aruco_ids");
     this->declare_parameter("aruco_size");
     this->declare_parameter("gate_size");
-    // this->declare_parameter("cm");
-    // this->declare_parameter("dc");
+    this->declare_parameter("camera_model");
+    this->declare_parameter("distortion_model");
+    this->declare_parameter("camera_matrix.data");
+    this->declare_parameter("distortion_coefficients.data");
 
     this->get_parameter("n_aruco_ids", n_aruco_ids_);
     this->get_parameter("aruco_size", aruco_size_);
     this->get_parameter("gate_size", gate_size_);
-    // this->get_parameter("cm", cm);
-    // this->get_parameter("dc", dc);
+    this->get_parameter("camera_model", camera_model_);
+    this->get_parameter("distortion_model", distorsion_model_);
+
+    rclcpp::Parameter cm_param = this->get_parameter("camera_matrix.data");
+    rclcpp::Parameter dc_param = this->get_parameter("distortion_coefficients.data");
+
+    std::vector<double> cm_param_vec = cm_param.as_double_array();
+    std::vector<double> dc_param_vec = dc_param.as_double_array();
+
+    double cm[3][3] = {{cm_param_vec[0], cm_param_vec[1], cm_param_vec[2]},
+                       {cm_param_vec[3], cm_param_vec[4], cm_param_vec[5]},
+                       {cm_param_vec[6], cm_param_vec[7], cm_param_vec[8]}};
+    double dc[1][5] = {dc_param_vec[0], dc_param_vec[1], dc_param_vec[2], dc_param_vec[3], dc_param_vec[4]};
+
+    camera_matrix_ = cv::Mat(3, 3, CV_64F, &cm).clone();
+    dist_coeffs_ = cv::Mat(1, 4, CV_64F, &dc).clone();
 
     RCLCPP_INFO(get_logger(), "Params: n_aruco_ids: %d", n_aruco_ids_);
     RCLCPP_INFO(get_logger(), "Params: aruco_size: %f", aruco_size_);
     RCLCPP_INFO(get_logger(), "Params: gate_size: %f", gate_size_);
 
-    camera_matrix_ = cv::Mat(3, 3, CV_64F, &cm);
-    dist_coeffs_ = cv::Mat(1, 5, CV_64F, &dc);
+    if (camera_model_ == "fisheye")
+        RCLCPP_INFO(get_logger(), "Using fisheye camera model");
+    if (camera_model_ == "pinhole")
+        RCLCPP_INFO(get_logger(), "Using pinhole camera model");
+
+    // for (int i = 0; i < 3; i++)
+    // {
+    //     for (int j = 0; j < 3; j++)
+    //     {
+    //         std::cout << camera_matrix_.at<double>(i, j) << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+
+    // for (int i = 0; i < 1; i++)
+    // {
+    //     for (int j = 0; j < 4; j++)
+    //     {
+    //         std::cout << dist_coeffs_.at<double>(i, j) << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 
     aruco_dict_ = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 }
