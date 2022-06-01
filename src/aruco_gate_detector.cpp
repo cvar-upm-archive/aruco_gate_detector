@@ -228,7 +228,7 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
 
         for (int i = 0; i < rvecs.size(); ++i)
         {
-            int id = marker_ids[i] - 1;
+            int id = marker_ids[i];
             RCLCPP_INFO(this->get_logger(), "Marker %d detected", id);
 
             if (id < n_aruco_ids_ && id >= 0)
@@ -247,15 +247,29 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
         }
     }
 
-    // TODO : CONFIGURE THIS ON A LAUNCH FILE
-    // use opencv functions to rectify output image using camera matrix and distortion coefficients
-    // OPTION 1:
-    cv::Mat rectified_image, undistort_camera_matrix;
+    cv::Mat undistort_camera_matrix;
+    cv::Mat rectified_image, cropped_image;
     cv::Rect roi;
-    float alpha = 1.0;
-    undistort_camera_matrix = cv::getOptimalNewCameraMatrix(camera_matrix_, dist_coeffs_, output_image.size(), alpha, output_image.size(), &roi);
-    cv::undistort(output_image, rectified_image, camera_matrix_, dist_coeffs_, undistort_camera_matrix);
-    cv::Mat cropped_image = rectified_image(roi);
+    float alpha = 0.0;
+
+    if (camera_model_ == "pinhole")
+    {
+        // use opencv functions to rectify output image using camera matrix and distortion coefficients
+        // OPTION 1:
+        undistort_camera_matrix = cv::getOptimalNewCameraMatrix(camera_matrix_, dist_coeffs_, output_image.size(), alpha, output_image.size(), &roi);
+        cv::undistort(output_image, rectified_image, camera_matrix_, dist_coeffs_, undistort_camera_matrix);
+        cropped_image = rectified_image(roi);
+    }
+
+    if (camera_model_ == "fisheye")
+    {
+        cv::fisheye::estimateNewCameraMatrixForUndistortRectify(camera_matrix_, dist_coeffs_, output_image.size(), cv::Matx33d::eye(), undistort_camera_matrix, alpha, output_image.size());
+        cv::fisheye::undistortImage(output_image, rectified_image, camera_matrix_, dist_coeffs_, undistort_camera_matrix);
+        // auto marker0 = marker_corners[0];
+        // cv::fisheye::undistortPoints(marker_corners[0], marker0, camera_matrix_, dist_coeffs_);
+    }
+
+    // cropped_image = rectified_image(roi);
 
     // OPTION 2:
     //  cv::Mat cropped_image;
@@ -265,6 +279,7 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
     //  cv::remap(output_image, cropped_image, map1, map2, cv::INTER_LINEAR);
 
     sensor_msgs::msg::Image output_image_msg = *(cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", rectified_image).toImageMsg().get());
+    // sensor_msgs::msg::Image output_image_msg = *(cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", cropped_image).toImageMsg().get());
     gate_img_transport_->updateData(output_image_msg);
     // gate_img_->updateData(output_image_msg);
 

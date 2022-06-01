@@ -71,6 +71,7 @@ private:
   // std::shared_ptr<as2::sensors::Sensor<nav_msgs::msg::Path>> gate_pose_;
   // std::shared_ptr<as2::sensors::Sensor<sensor_msgs::msg::Image>> gate_img_;
 
+  bool is_fisheye_;
   int n_aruco_ids_;
   float aruco_size_;
   float gate_size_;
