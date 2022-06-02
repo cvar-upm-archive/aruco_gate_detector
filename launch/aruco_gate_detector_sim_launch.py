@@ -54,7 +54,6 @@ def generate_launch_description(ns='drone0'):
         Node(
             package='aruco_gate_detector',
             executable='aruco_gate_detector_node',
-            name='aruco_gate_detector',
             namespace=LaunchConfiguration('drone_id'),
             parameters=[config],
             output='screen',
