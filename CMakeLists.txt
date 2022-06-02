@@ -38,7 +38,6 @@ endforeach()
 include_directories(
   include
   include/${PROJECT_NAME}
-  ${realsense2_INCLUDE_DIR}
 )
 
 set(HEADER_HPP_FILES 
