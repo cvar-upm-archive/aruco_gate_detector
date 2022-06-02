@@ -32,64 +32,6 @@
 
 #include "aruco_gate_detector.hpp"
 
-// TODO: MOVE TO CONFIG
-
-// WIDE03
-// double cm[3][3] = {{519.9198295939999, 0.0, 659.1468132131484}, {0.0, 502.46760776515197, 357.57506142772786}, {0.0, 0.0, 1.0}};
-// double dc[3][3] = {-0.021303744666207214, -0.006628539603283135, -0.007097678030316164, 0.002559386685475455};
-
-// WIDE01 CHARUCO+FISHEYE
-// double cm[3][3] = {{4.2852150516007600e+02, 0.0, 6.4804331544416209e+02},
-//                    {0.0, 4.26467198208e+02, 3.5817221096516408e+02},
-//                    {0.0, 0.0, 1.0}};
-// double dc[3][3] = {7.0191344622352936e-02, -1.2101689581953802e-01, 1.1168828616522096e-01, -4.3857945453011388e-02};
-
-// WIDE01 MEDIA
-// double cm[3][3] = {{508.60531713, 0.0, 673.13938558},
-//                    {0.0, 509.52825387, 340.57394046},
-//                    {0.0, 0.0, 1.0}};
-// double dc[3][3] = {-0.04115584,
-//                    0.05152566,
-//                    -0.0490604,
-//                    0.01354326};
-
-// WIDE01 BEST VALUES
-// double cm[3][3] = {{637.9614926, 0.0, 667.98975122}, {0.0, 640.05361203, 333.91197236}, {0.0, 0.0, 1.0}};
-// double dc[1][5] = {-3.09977481e-01, 8.11423469e-02, -8.32602704e-04, -9.54393674e-05, -8.76546404e-03};
-
-// WIDE03
-// double cm[3][3] = {{2.24648362e+03, 0.0, 4.77031850e+02},
-//                    {0.0, 2.31582641e+03, 4.53653036e+02},
-//                    {0.0, 0.0, 1.0}};
-// double dc[1][5] = {-2.02409215,
-//                    4.13556539,
-//                    -0.05035131,
-//                    0.11815325,
-//                    -12.71601469};
-
-// WIDE01
-// double cm[3][3] = {{337.6587961, 0.0, 332.73411764},
-//                    {0.0, 338.56919595, 229.14558473},
-//                    {0.0, 0.0, 1.0}};
-// double dc[1][5] = {-0.29179988, 0.08567101, -0.00054972, 0.00033732, -0.01110803};
-
-// WIDE01 FISHEYE
-// double cm[3][3] = {{505.20174672723, 0.0, 647.8646199159122}, {0.0, 506.2586065372182, 352.6244449424373}, {0.0, 0.0, 1.0}};
-// double dc[1][5] = {-0.03303864458954249, -0.061031201860639706, -0.009942171874437876, 0.024527641870623257};
-
-// SIMULATION PARAMETERS
-// double cm[3}[3] = {{507.87273461908296, 0, 640.5},
-//                    {0, 507.87273461908296, 360.5},
-//                    {0, 0, 1.0}};
-// double dc[3][3] = {0, 0, 0, 0, 0};
-// #define CAMERA_TOPIC "camera1/image_raw"
-
-// #define ARUCO_SIZE 0.3 // meters
-// #define N_GATES 6
-// #define GATE_SIZE 2.4 // 1.6 //meters
-
-//----
-
 ArucoGateDetector::ArucoGateDetector()
     : as2::Node("aruco_gate_detector")
 {
@@ -134,47 +76,33 @@ void ArucoGateDetector::loadParameters()
     std::vector<double> cm_param_vec = cm_param.as_double_array();
     std::vector<double> dc_param_vec = dc_param.as_double_array();
 
-    double cm[3][3] = {{cm_param_vec[0], cm_param_vec[1], cm_param_vec[2]},
-                       {cm_param_vec[3], cm_param_vec[4], cm_param_vec[5]},
-                       {cm_param_vec[6], cm_param_vec[7], cm_param_vec[8]}};
-    double dc[1][5] = {dc_param_vec[0], dc_param_vec[1], dc_param_vec[2], dc_param_vec[3], dc_param_vec[4]};
+    camera_matrix_ = cv::Mat(3, 3, CV_64F, cm_param_vec.data()).clone();
+    dist_coeffs_ = cv::Mat(1, dc_param_vec.size(), CV_64F, dc_param_vec.data()).clone();
 
-    camera_matrix_ = cv::Mat(3, 3, CV_64F, &cm).clone();
-    dist_coeffs_ = cv::Mat(1, 4, CV_64F, &dc).clone();
-
-    RCLCPP_INFO(get_logger(), "Params: n_aruco_ids: %d", n_aruco_ids_);
-    RCLCPP_INFO(get_logger(), "Params: aruco_size: %f", aruco_size_);
-    RCLCPP_INFO(get_logger(), "Params: gate_size: %f", gate_size_);
+    std::cout << camera_matrix_ << std::endl;
+    std::cout << dist_coeffs_ << std::endl;
 
     if (camera_model_ == "fisheye")
-        RCLCPP_INFO(get_logger(), "Using fisheye camera model");
+    {
+        RCLCPP_INFO(get_logger(), "Using FISHEYE camera model");
+        if (dc_param_vec.size() != 4)
+        {
+            RCLCPP_ERROR(get_logger(), "FISHEYE distortion coefficients must be 4");
+        }
+    }
     if (camera_model_ == "pinhole")
-        RCLCPP_INFO(get_logger(), "Using pinhole camera model");
+        RCLCPP_INFO(get_logger(), "Using PINHOLE camera model");
 
-    // for (int i = 0; i < 3; i++)
-    // {
-    //     for (int j = 0; j < 3; j++)
-    //     {
-    //         std::cout << camera_matrix_.at<double>(i, j) << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-
-    // for (int i = 0; i < 1; i++)
-    // {
-    //     for (int j = 0; j < 4; j++)
-    //     {
-    //         std::cout << dist_coeffs_.at<double>(i, j) << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
+    RCLCPP_INFO(get_logger(), "Params: n_aruco_ids: %d", n_aruco_ids_);
+    RCLCPP_INFO(get_logger(), "Params: aruco_size: %.3f m", aruco_size_);
+    RCLCPP_INFO(get_logger(), "Params: gate_size: %.2f m", gate_size_);
 
     aruco_dict_ = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 }
 
 void ArucoGateDetector::setCameraInfo(const cv::Mat &_camera_matrix, const cv::Mat &_dist_coeffs)
 {
-    RCLCPP_INFO(get_logger(), "Setting camera info");
+    RCLCPP_DEBUG(get_logger(), "Setting camera info");
     sensor_msgs::msg::CameraInfo camera_info;
 
     camera_info.k[0] = _camera_matrix.at<double>(0, 0);
@@ -187,6 +115,7 @@ void ArucoGateDetector::setCameraInfo(const cv::Mat &_camera_matrix, const cv::M
     camera_info.k[7] = _camera_matrix.at<double>(2, 1);
     camera_info.k[8] = _camera_matrix.at<double>(2, 2);
 
+    // FIXME
     camera_info.d.emplace_back(_dist_coeffs.at<double>(0, 0));
     camera_info.d.emplace_back(_dist_coeffs.at<double>(0, 1));
     camera_info.d.emplace_back(_dist_coeffs.at<double>(0, 2));
@@ -233,16 +162,15 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
 
             if (id < n_aruco_ids_ && id >= 0)
             {
-                auto rvec = rvecs[i];
-                auto tvec = tvecs[i];
+                cv::Vec3d rvec = rvecs[i];
+                cv::Vec3d tvec = tvecs[i];
                 cv::Vec3d t_gate;
+                cv::Vec3d rout, tout;
                 t_gate[0] = -gate_size_ / 2.0f;
-                auto rout = rvec * 0;
-                auto tout = tvec * 0;
                 cv::composeRT(rvec * 0, t_gate, rvec, tvec, rout, tout);
                 gate_positions[id] = tout;
                 gate_rotations[id] = rout;
-                cv::aruco::drawAxis(output_image, camera_matrix_, dist_coeffs_, rout, tout, 0.5);
+                cv::aruco::drawAxis(output_image, camera_matrix_, dist_coeffs_, rout, tout, 0.08625);
             }
         }
     }
@@ -256,15 +184,17 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
     {
         // use opencv functions to rectify output image using camera matrix and distortion coefficients
         // OPTION 1:
-        undistort_camera_matrix = cv::getOptimalNewCameraMatrix(camera_matrix_, dist_coeffs_, output_image.size(), alpha, output_image.size(), &roi);
-        cv::undistort(output_image, rectified_image, camera_matrix_, dist_coeffs_, undistort_camera_matrix);
-        cropped_image = rectified_image(roi);
+        RCLCPP_INFO_ONCE(get_logger(), "Undistort image with pinhole model");
+        // undistort_camera_matrix = cv::getOptimalNewCameraMatrix(camera_matrix_, dist_coeffs_, output_image.size(), alpha, output_image.size(), &roi);
+        cv::undistort(output_image, rectified_image, camera_matrix_, dist_coeffs_);
+        // cropped_image = rectified_image(roi);
     }
 
     if (camera_model_ == "fisheye")
     {
-        cv::fisheye::estimateNewCameraMatrixForUndistortRectify(camera_matrix_, dist_coeffs_, output_image.size(), cv::Matx33d::eye(), undistort_camera_matrix, alpha, output_image.size());
-        cv::fisheye::undistortImage(output_image, rectified_image, camera_matrix_, dist_coeffs_, undistort_camera_matrix);
+        RCLCPP_INFO_ONCE(get_logger(), "Undistort image with fisheye model");
+        // cv::fisheye::estimateNewCameraMatrixForUndistortRectify(camera_matrix_, dist_coeffs_, output_image.size(), cv::Matx33d::eye(), undistort_camera_matrix, alpha, output_image.size());
+        cv::fisheye::undistortImage(output_image, rectified_image, camera_matrix_, dist_coeffs_);
         // auto marker0 = marker_corners[0];
         // cv::fisheye::undistortPoints(marker_corners[0], marker0, camera_matrix_, dist_coeffs_);
     }
