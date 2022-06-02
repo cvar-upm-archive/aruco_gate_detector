@@ -239,5 +239,4 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
 
         gate_pose_pub_->publish(path);
     }
-    // gate_pose_pub_->updateData(path);
 };

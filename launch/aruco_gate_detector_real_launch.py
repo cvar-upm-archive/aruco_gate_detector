@@ -76,7 +76,7 @@ def generate_launch_description(ns='drone0'):
     return LaunchDescription([
         drone_id,
 
-        OpaqueFunction(function=cameraNode),
+        # OpaqueFunction(function=cameraNode),
 
         Node(
             package='aruco_gate_detector',
@@ -86,7 +86,9 @@ def generate_launch_description(ns='drone0'):
             parameters=[config],
             # parameters=[config, usbcam_camerainfo],
             output='screen',
-            emulate_tty=True
+            emulate_tty=True,
+            remappings=[
+                ("sensor_measurements/camera/image_raw", "sensor_measurements/aruco_camera")]
         ),
 
         OpaqueFunction(function=staticTransformNode)
