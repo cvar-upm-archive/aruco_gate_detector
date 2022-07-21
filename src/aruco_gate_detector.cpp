@@ -36,6 +36,7 @@ ArucoGateDetector::ArucoGateDetector()
     : as2::Node("aruco_gate_detector")
 {
     std::string ns = this->get_namespace();
+    loadParameters();
 
     // gate_pose = std::make_shared<as2::sensors::Sensor<nav_msgs::msg::Path>>("gate_pose_topic", this);
     gate_pose_pub_ = this->create_publisher<nav_msgs::msg::Path>(
@@ -43,14 +44,27 @@ ArucoGateDetector::ArucoGateDetector()
     gate_img_transport_ = std::make_shared<as2::sensors::Camera>(
         "gate_img_topic", this);
 
+    std::shared_ptr<const rclcpp::QoS> camera_qos;
+    if (camera_qos_reliable_)
+    {
+        RCLCPP_INFO(get_logger(), "QoS Camera subscription: Reliable");
+        camera_qos = std::make_shared<const rclcpp::QoS>(rclcpp::QoS(2));
+    }
+    else
+    {
+        RCLCPP_INFO(get_logger(), "QoS Camera subscription: Sensor");
+        camera_qos = std::make_shared<const rclcpp::QoS>(rclcpp::SensorDataQoS());
+    }
+
     cam_image_ = this->create_subscription<sensor_msgs::msg::Image>(
         this->generate_global_name(as2_names::topics::sensor_measurements::camera + "/image_raw"),
-        rclcpp::QoS(2),
+        *camera_qos,
         std::bind(&ArucoGateDetector::imageCallback, this, std::placeholders::_1));
 
-    loadParameters();
-
-    setCameraInfo(camera_matrix_, dist_coeffs_);
+    cam_info_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
+        this->generate_global_name(as2_names::topics::sensor_measurements::camera + "/camera_info"),
+        as2_names::topics::sensor_measurements::qos,
+        std::bind(&ArucoGateDetector::camerainfoCallback, this, std::placeholders::_1));
 };
 
 void ArucoGateDetector::loadParameters()
@@ -63,35 +77,37 @@ void ArucoGateDetector::loadParameters()
     this->declare_parameter("distortion_model");
     this->declare_parameter("camera_matrix.data");
     this->declare_parameter("distortion_coefficients.data");
+    this->declare_parameter("camera_qos_reliable");
 
     this->get_parameter("n_aruco_ids", n_aruco_ids_);
     this->get_parameter("aruco_size", aruco_size_);
     this->get_parameter("gate_size", gate_size_);
     this->get_parameter("camera_model", camera_model_);
     this->get_parameter("distortion_model", distorsion_model_);
+    this->get_parameter("camera_qos_reliable", camera_qos_reliable_);
 
-    rclcpp::Parameter cm_param = this->get_parameter("camera_matrix.data");
-    rclcpp::Parameter dc_param = this->get_parameter("distortion_coefficients.data");
+    // rclcpp::Parameter cm_param = this->get_parameter("camera_matrix.data");
+    // rclcpp::Parameter dc_param = this->get_parameter("distortion_coefficients.data");
 
-    std::vector<double> cm_param_vec = cm_param.as_double_array();
-    std::vector<double> dc_param_vec = dc_param.as_double_array();
+    // std::vector<double> cm_param_vec = cm_param.as_double_array();
+    // std::vector<double> dc_param_vec = dc_param.as_double_array();
 
-    camera_matrix_ = cv::Mat(3, 3, CV_64F, cm_param_vec.data()).clone();
-    dist_coeffs_ = cv::Mat(1, dc_param_vec.size(), CV_64F, dc_param_vec.data()).clone();
+    // camera_matrix_ = cv::Mat(3, 3, CV_64F, cm_param_vec.data()).clone();
+    // dist_coeffs_ = cv::Mat(1, dc_param_vec.size(), CV_64F, dc_param_vec.data()).clone();
 
-    std::cout << camera_matrix_ << std::endl;
-    std::cout << dist_coeffs_ << std::endl;
+    // std::cout << camera_matrix_ << std::endl;
+    // std::cout << dist_coeffs_ << std::endl;
 
-    if (camera_model_ == "fisheye")
-    {
-        RCLCPP_INFO(get_logger(), "Using FISHEYE camera model");
-        if (dc_param_vec.size() != 4)
-        {
-            RCLCPP_ERROR(get_logger(), "FISHEYE distortion coefficients must be 4");
-        }
-    }
-    if (camera_model_ == "pinhole")
-        RCLCPP_INFO(get_logger(), "Using PINHOLE camera model");
+    // if (camera_model_ == "fisheye")
+    // {
+    //     RCLCPP_INFO(get_logger(), "Using FISHEYE camera model");
+    //     if (dc_param_vec.size() != 4)
+    //     {
+    //         RCLCPP_ERROR(get_logger(), "FISHEYE distortion coefficients must be 4");
+    //     }
+    // }
+    // if (camera_model_ == "pinhole")
+    //     RCLCPP_INFO(get_logger(), "Using PINHOLE camera model");
 
     RCLCPP_INFO(get_logger(), "Params: n_aruco_ids: %d", n_aruco_ids_);
     RCLCPP_INFO(get_logger(), "Params: aruco_size: %.3f m", aruco_size_);
@@ -100,9 +116,53 @@ void ArucoGateDetector::loadParameters()
     aruco_dict_ = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 }
 
+void ArucoGateDetector::setCameraParameters(const sensor_msgs::msg::CameraInfo _camera_info)
+{
+    camera_matrix_ = cv::Mat(3, 3, CV_64F);
+
+    camera_matrix_.at<double>(0, 0) = _camera_info.k[0];
+    camera_matrix_.at<double>(0, 1) = _camera_info.k[1];
+    camera_matrix_.at<double>(0, 2) = _camera_info.k[2];
+    camera_matrix_.at<double>(1, 0) = _camera_info.k[3];
+    camera_matrix_.at<double>(1, 1) = _camera_info.k[4];
+    camera_matrix_.at<double>(1, 2) = _camera_info.k[5];
+    camera_matrix_.at<double>(2, 0) = _camera_info.k[6];
+    camera_matrix_.at<double>(2, 1) = _camera_info.k[7];
+    camera_matrix_.at<double>(2, 2) = _camera_info.k[8];
+
+    std::cout << camera_matrix_ << std::endl;
+
+    int n_discoeff = _camera_info.d.size();
+    // RCLCPP_INFO(get_logger(), "number of D coeff: %i", n_discoeff);
+
+    dist_coeffs_ = cv::Mat(1, n_discoeff, CV_64F);
+
+    for (int i; i < n_discoeff; i++)
+    {
+        dist_coeffs_.at<double>(0, i) = _camera_info.d[i];
+    }
+
+    std::cout << dist_coeffs_ << std::endl;
+
+    distorsion_model_ = _camera_info.distortion_model;
+
+    if (camera_model_ == "fisheye")
+    {
+        RCLCPP_INFO(get_logger(), "Using FISHEYE camera model");
+        if (n_discoeff != 4)
+        {
+            RCLCPP_ERROR(get_logger(), "FISHEYE distortion coefficients must be 4");
+        }
+    }
+    if (camera_model_ == "pinhole")
+        RCLCPP_INFO(get_logger(), "Using PINHOLE camera model");
+
+    camera_params_available_ = true;
+}
+
 void ArucoGateDetector::setCameraInfo(const cv::Mat &_camera_matrix, const cv::Mat &_dist_coeffs)
 {
-    RCLCPP_DEBUG(get_logger(), "Setting camera info");
+    RCLCPP_DEBUG(get_logger(), "Setting camera info for gate image");
     sensor_msgs::msg::CameraInfo camera_info;
 
     camera_info.k[0] = _camera_matrix.at<double>(0, 0);
@@ -125,6 +185,17 @@ void ArucoGateDetector::setCameraInfo(const cv::Mat &_camera_matrix, const cv::M
     gate_img_transport_->setParameters(camera_info);
 }
 
+void ArucoGateDetector::camerainfoCallback(const sensor_msgs::msg::CameraInfo::SharedPtr info)
+{
+    RCLCPP_DEBUG(this->get_logger(), "Camera info received by callback");
+    if (camera_params_available_)
+    {
+        return;
+    }
+    RCLCPP_INFO(get_logger(), "Setting camera info");
+    setCameraParameters(*info);
+}
+
 void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr img)
 {
     RCLCPP_DEBUG(this->get_logger(), "Image received by callback");
@@ -137,6 +208,12 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
     catch (cv_bridge::Exception &ex)
     {
         RCLCPP_ERROR(this->get_logger(), "CV_bridge exception: %s\n", ex.what());
+    }
+
+    if (!camera_params_available_)
+    {
+        RCLCPP_WARN(get_logger(), "No camera parameters available");
+        return;
     }
 
     // init ArUco detection
@@ -209,9 +286,7 @@ void ArucoGateDetector::imageCallback(const sensor_msgs::msg::Image::SharedPtr i
     //  cv::remap(output_image, cropped_image, map1, map2, cv::INTER_LINEAR);
 
     sensor_msgs::msg::Image output_image_msg = *(cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", rectified_image).toImageMsg().get());
-    // sensor_msgs::msg::Image output_image_msg = *(cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", cropped_image).toImageMsg().get());
     gate_img_transport_->updateData(output_image_msg);
-    // gate_img_->updateData(output_image_msg);
 
     // Publish path
 

@@ -44,13 +44,16 @@ def staticTransformNode(context, *args, **kwargs):
 
 def generate_launch_description(ns='drone0'):
 
+    drone_id = DeclareLaunchArgument('drone_id', default_value='drone0')
+    log_level = DeclareLaunchArgument('log_level', default_value='info')
+
     config = os.path.join(get_package_share_directory('aruco_gate_detector'),
                           'config/aruco_gate_detector',
                           'sim_params.yaml')
 
     return LaunchDescription([
-        DeclareLaunchArgument('drone_id', default_value='drone0'),
-        DeclareLaunchArgument('log_level', default_value='info'),
+        drone_id,
+        log_level,
         Node(
             package='aruco_gate_detector',
             executable='aruco_gate_detector_node',
@@ -59,7 +62,8 @@ def generate_launch_description(ns='drone0'):
             output='screen',
             emulate_tty=True,
             remappings=[
-                ("sensor_measurements/camera/image_raw", "camera1/image_raw")]
+                ("sensor_measurements/camera/image_raw", "camera1/image_raw"),
+                ("sensor_measurements/camera/camera_info", "camera1/camera_info")]
         ),
 
         OpaqueFunction(function=staticTransformNode)

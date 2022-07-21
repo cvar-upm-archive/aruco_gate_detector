@@ -65,6 +65,7 @@ public:
 
 private:
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr cam_image_;
+  rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr cam_info_;
   rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr gate_pose_pub_;
   std::shared_ptr<as2::sensors::Camera> gate_img_transport_;
 
@@ -76,15 +77,19 @@ private:
   float gate_size_;
   std::string camera_model_;
   std::string distorsion_model_;
+  bool camera_qos_reliable_;
+  bool camera_params_available_;
   cv::Mat camera_matrix_;
   cv::Mat dist_coeffs_;
   cv::Ptr<cv::aruco::Dictionary> aruco_dict_;
 
   void setCameraInfo(const cv::Mat &_camera_matrix, const cv::Mat &_dist_coeffs);
   void loadParameters();
+  void setCameraParameters(const sensor_msgs::msg::CameraInfo _camera_info);
 
 public:
   void imageCallback(const sensor_msgs::msg::Image::SharedPtr img);
+  void camerainfoCallback(const sensor_msgs::msg::CameraInfo::SharedPtr info);
 };
 
 #endif // ARUCO_GATE_DETECTOR_HPP_

@@ -25,17 +25,11 @@ def generate_launch_description(ns='drone0'):
             FindPackageShare('usb_camera_interface'),
             'launch', 'usb_camera_interface_launch.py'
         ])]),
-        # launch_arguments={
-        #     # 'drone_id': drone_id,
-        #     # 'config': LaunchConfiguration('config_takeoff')
-        # }.items()
     )
 
     return LaunchDescription([
         drone_id,
         usb_camera,
-
-        # OpaqueFunction(function=cameraNode),
 
         Node(
             package='aruco_gate_detector',
@@ -47,6 +41,4 @@ def generate_launch_description(ns='drone0'):
             remappings=[
                 ("sensor_measurements/camera/image_raw", "sensor_measurements/aruco_camera")]
         ),
-
-        # OpaqueFunction(function=staticTransformNode)
     ])
